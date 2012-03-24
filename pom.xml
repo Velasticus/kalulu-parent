@@ -12,6 +12,7 @@
     <java.target>1.7</java.target>
     <org.slf4j.version>1.6.4</org.slf4j.version>
     <ch.qos.logback.version>1.0.1</ch.qos.logback.version>
+    <org.apache.avro.version>1.6.3</org.apache.avro.version>
   </properties>
 
   <repositories>
@@ -20,6 +21,16 @@
       <name>Scala-Tools Maven2 Repository</name>
       <url>http://scala-tools.org/repo-releases</url>
     </repository>
+    <repository>
+      <id>couchbase</id>
+      <name>Couchbase Maven2 Repository</name>
+      <url>http://files.couchbase.com/maven2/</url>
+    </repository>
+    <repository>
+      <id>apache</id>
+      <name>Apache Maven2 Repository</name>
+      <url>https://repository.apache.org/content/repositories/releases</url>
+    </repository>
   </repositories>
 
   <pluginRepositories>
@@ -27,6 +38,11 @@
       <id>scala-tools.org</id>
       <name>Scala-Tools Maven2 Repository</name>
       <url>http://scala-tools.org/repo-releases</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>apache</id>
+      <name>Apache Maven2 Repository</name>
+      <url>https://repository.apache.org/content/repositories/releases</url>
     </pluginRepository>
   </pluginRepositories>
 
@@ -69,6 +85,170 @@
   	    <artifactId>slf4j-simple</artifactId>
   	    <version>${org.slf4j.version}</version>
       </dependency>
+      <dependency>
+      	<groupId>org.reddwarfserver.server</groupId>
+      	<artifactId>sgs-server-api</artifactId>
+      	<version>${org.reddwarfserver.version}</version>
+      </dependency>
+      <dependency>
+      	<groupId>org.reddwarfserver.server</groupId>
+      	<artifactId>sgs-server-internal-api</artifactId>
+      	<version>${org.reddwarfserver.version}</version>
+      </dependency>
+      <dependency>
+      	<groupId>org.apache.avro</groupId>
+      	<artifactId>avro</artifactId>
+      	<version>${org.apache.avro.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.avro</groupId>
+        <artifactId>avro-ipc</artifactId>
+        <version>${org.apache.avro.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.3.2</version>
+          <configuration>
+            <source>${java.source}</source>
+            <target>${java.target}</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-eclipse-plugin</artifactId>
+          <version>2.9</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.7.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId> 
+          <version>2.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId> 
+          <version>1.7</version>
+        </plugin>
+        <plugin>
+          <groupId>org.scala-tools</groupId>
+          <artifactId>maven-scala-plugin</artifactId>
+          <version>2.15.2</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>compile</goal>
+                <goal>testCompile</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <args>
+              <arg>-target:jvm-1.5</arg>
+            </args>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.avro</groupId>
+          <artifactId>avro-maven-plugin</artifactId>
+          <version>${org.apache.avro.version}</version>
+          <executions>
+            <execution>
+              <id>generate-schema</id>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>protocol</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>add-source</id>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>add-source</goal>
+              </goals>
+              <configuration>
+                <sources>
+                  <source>${project.build.directory}/generated-sources/avro</source>
+                </sources>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+  <profiles>
+    <profile>
+      <activation>
+        <property>
+          <name>m2e.version</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+            <plugin>
+                <groupId>org.eclipse.m2e</groupId>
+                <artifactId>lifecycle-mapping</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <lifecycleMappingMetadata>
+                        <pluginExecutions>
+                            <pluginExecution>
+                                <pluginExecutionFilter>
+                                    <groupId>org.scala-tools</groupId>
+                                    <artifactId>maven-scala-plugin</artifactId>
+                                    <versionRange>[2.15.2,)</versionRange>
+                                    <goals>
+                                        <goal>compile</goal>
+                                    </goals>
+                                </pluginExecutionFilter>
+                                <action>
+                                    <execute></execute>
+                                </action>
+                            </pluginExecution>
+                            <pluginExecution>
+                                <pluginExecutionFilter>
+                                    <groupId>org.apache.avro</groupId>
+                                    <artifactId>avro-maven-plugin</artifactId>
+                                    <versionRange>[1.6.0,)</versionRange>
+                                    <goals>
+                                        <goal>schema</goal>
+                                        <goal>protocol</goal>
+                                    </goals>
+                                </pluginExecutionFilter>
+                                <action>
+                                    <execute></execute>
+                                </action>
+                            </pluginExecution>
+                        </pluginExecutions>
+                    </lifecycleMappingMetadata>
+                </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
 </project>
