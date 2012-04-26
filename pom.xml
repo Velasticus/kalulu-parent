@@ -13,6 +13,7 @@
     <org.slf4j.version>1.6.4</org.slf4j.version>
     <ch.qos.logback.version>1.0.1</ch.qos.logback.version>
     <org.apache.avro.version>1.6.3</org.apache.avro.version>
+    <org.reddwarfserver.version>0.10.3-SNAPSHOT</org.reddwarfserver.version>
   </properties>
 
   <repositories>
@@ -94,6 +95,16 @@
       	<groupId>org.reddwarfserver.server</groupId>
       	<artifactId>sgs-server-internal-api</artifactId>
       	<version>${org.reddwarfserver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.reddwarfserver.client</groupId>
+        <artifactId>sgs-client-api</artifactId>
+        <version>${org.reddwarfserver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.reddwarfserver.client</groupId>
+        <artifactId>sgs-client</artifactId>
+        <version>${org.reddwarfserver.version}</version>
       </dependency>
       <dependency>
       	<groupId>org.apache.avro</groupId>
